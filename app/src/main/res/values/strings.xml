@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">RaiseIn</string>
+    <string name="facebook_application_id">744009539471031</string>
+    <string name="fb_login_protocol_scheme">fb744009539471031</string>
+
 </resources>

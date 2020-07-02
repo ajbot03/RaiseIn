@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "93189322520",
+    "firebase_url": "https://raisein-chennai.firebaseio.com",
+    "project_id": "raisein-chennai",
+    "storage_bucket": "raisein-chennai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93189322520:android:1eec0b5922dc9a88a5d06d",
+        "android_client_info": {
+          "package_name": "com.example.raisein"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "93189322520-mk0r3basptm45rvli6jajmug5ev965gd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2vPAzhuIHz4CtJzDIqrWItbWEQqWRayA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "93189322520-mk0r3basptm45rvli6jajmug5ev965gd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
