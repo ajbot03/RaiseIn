@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,16 +22,24 @@ import android.provider.MediaStore;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
+
+import com.facebook.login.LoginManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.takusemba.spotlight.OnSpotlightEndedListener;
+import com.takusemba.spotlight.OnSpotlightStartedListener;
+import com.takusemba.spotlight.SimpleTarget;
+import com.takusemba.spotlight.Spotlight;
+import com.wooplr.spotlight.SpotlightView;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,7 +61,7 @@ import okhttp3.Response;
 
 public class welcome_screen extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
-    Button logout;
+    ImageView logout,next;
     Uri imageUri;
     ImageView camera;
     private static final Pattern IP_ADDRESS
@@ -69,26 +79,81 @@ public class welcome_screen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_screen);
+        camera=(ImageView)findViewById(R.id.capture);
+
+
+        View one = findViewById(R.id.capture);
+
+
+
+        View two = findViewById(R.id.logout);
+
+        two.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                two.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int[] oneLocation = new int[2];
+                one.getLocationInWindow(oneLocation);
+                float oneX = oneLocation[0] + one.getWidth() / 2f;
+                float oneY = oneLocation[1] + one.getHeight() / 2f;
+                // make an target
+                SimpleTarget firstTarget = new SimpleTarget.Builder(welcome_screen.this).setPoint(oneX, oneY)
+                        .setRadius(100f)
+                        .setTitle("Camera")
+                        .setDescription("Capture clear image of your face")
+                        .build();
+                int[] twoLocation = new int[2];
+                two.getLocationInWindow(twoLocation);
+                PointF point =
+                        new PointF(twoLocation[0] + two.getWidth() / 2f, twoLocation[1] + two.getHeight() / 2f);
+                // make an target
+                SimpleTarget secondTarget = new SimpleTarget.Builder(welcome_screen.this).setPoint(point)
+                        .setRadius(80f)
+                        .setTitle("Logout")
+                        .setDescription("Click to logout from the current account")
+                        .build();
+                Spotlight.with(welcome_screen.this)
+                        .setDuration(1000L)
+                        .setAnimation(new DecelerateInterpolator(2f))
+                        .setTargets(firstTarget, secondTarget)
+                        .setOnSpotlightStartedListener(new OnSpotlightStartedListener() {
+                            @Override
+                            public void onStarted() {
+                                Toast.makeText(welcome_screen.this, "spotlight is started", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        })
+                        .setOnSpotlightEndedListener(new OnSpotlightEndedListener() {
+                            @Override
+                            public void onEnded() {
+                                Toast.makeText(welcome_screen.this, "spotlight is ended", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .start();
+
+
+
+            }
+        });
+
+
         firebaseAuth= FirebaseAuth.getInstance();
         logout=findViewById(R.id.logout);
         camera=(ImageView)findViewById(R.id.capture);
+        next=findViewById(R.id.next);
         camera.setClickable(true);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-                AuthUI.getInstance()
-                        .signOut(welcome_screen.this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                LoginManager.getInstance().logOut();
+                startActivity(new Intent(welcome_screen.this,signin_activity.class));
 
-
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                startActivity(new Intent(welcome_screen.this,signin_activity.class));
-                                finish();
-                            }
-                        });
-
+            }
+        });
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(welcome_screen.this,dimension.class));
             }
         });
         camera.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +194,7 @@ public class welcome_screen extends AppCompatActivity {
                 }
                 return;
             }
+
             case 2: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 //                    Toast.makeText(getApplicationContext(), "Access to Internet Permission Granted. Thanks.", Toast.LENGTH_SHORT).show();
@@ -155,10 +221,10 @@ public class welcome_screen extends AppCompatActivity {
         }
         responseText.setText("Sending the Files. Please Wait ...");
 
-        EditText ipv4AddressView = findViewById(R.id.IPAddress);
-        String ipv4Address = ipv4AddressView.getText().toString();
-        EditText portNumberView = findViewById(R.id.portNumber);
-        String portNumber = portNumberView.getText().toString();
+
+        String ipv4Address = "192.168.0.26";
+
+        String portNumber = "5000";
 
         Matcher matcher = IP_ADDRESS.matcher(ipv4Address);
         if (!matcher.matches()) {
