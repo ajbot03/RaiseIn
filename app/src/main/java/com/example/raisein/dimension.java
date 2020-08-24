@@ -30,13 +30,15 @@ import java.io.IOException;
 public class dimension extends AppCompatActivity {
 
     private EditText weight, height;
-    private Button upload;
+    private Button upload,next;
     private ImageView logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dimension);
+        next=findViewById(R.id.next);
+        next.setVisibility(View.INVISIBLE);
         Toast.makeText(getApplicationContext(),"Enter your height and weight",Toast.LENGTH_LONG).show();
 
         weight = findViewById(R.id.weight);
@@ -66,6 +68,12 @@ public class dimension extends AppCompatActivity {
                 startActivity(new Intent(dimension.this,signin_activity.class));
 
 
+            }
+        });
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),Gan.class));
             }
         });
     }
@@ -114,6 +122,7 @@ public class dimension extends AppCompatActivity {
                         TextView responseText = findViewById(R.id.result);
                         try {
                             responseText.setText("Server's Response\n" + response.body().string());
+                            next.setVisibility(View.VISIBLE);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

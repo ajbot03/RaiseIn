@@ -300,7 +300,9 @@ public class welcome_screen extends AppCompatActivity {
                         try {
                             responseText.setText("Server's Response\n" + response.body().string());
                         } catch (IOException e) {
+                            
                             e.printStackTrace();
+
                         }
                     }
                 });
